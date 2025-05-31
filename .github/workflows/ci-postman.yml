@@ -43,7 +43,7 @@ jobs:
 
       - name: Upload Postman HTML report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: postman-report
           path: postman-report.html
