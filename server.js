@@ -5,27 +5,25 @@ const morgan = require("morgan");
 const pool = require("./config/db");
 const cookieParser = require("cookie-parser");
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 const http = require("http");
+const server = http.createServer(app);
 
 // routes
 const authRoutes = require("./routes/auth");
 const errorHandler = require("./middleware/errorHandler");
 const authenticateJWT = require("./middleware/auth");
-const jsonrefresh = require("./routes/auth");
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(morgan("combined")); // Allows JSON requests
-app.use(authenticateIP);
+app.use(morgan("combined"));
 app.use(cookieParser());
+
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/auth", jsonrefresh);
 app.use(errorHandler);
-
 
 // Start server
 server.listen(port, "0.0.0.0", async () => {
@@ -39,5 +37,4 @@ server.listen(port, "0.0.0.0", async () => {
   } catch (err) {
     console.error('Failed to connect to the database:', err.message);
   }
-
 });
