@@ -1,0 +1,40 @@
+# .github/workflows/ci-postman.yml
+name: CI - Postman API Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  postman-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 # or 20, your preferred version
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Run Postman collection (Signup tests)
+        run: |
+          newman run "gardening app signup demo.postman_collection.json" \
+            --env-var baseUrl=http://localhost:3000/api/auth \
+            --reporters cli,html \
+            --reporter-html-export postman-report.html
+
+      - name: Upload Postman HTML report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: postman-report
+          path: postman-report.html
