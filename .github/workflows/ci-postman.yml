@@ -36,7 +36,7 @@ jobs:
 
       - name: Run Postman Collection
         run: |
-          newman run __tests__/postman/gardening-app-collection.json \
+          newman run __tests__/postman/auth-collection.postman_collection.json \
             --env-var baseUrl=http://localhost:3000/api/auth \
             --reporters cli,html \
             --reporter-html-export postman-report.html
