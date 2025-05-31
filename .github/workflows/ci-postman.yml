@@ -22,8 +22,10 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: npm install
+      - name: Reinstall dependencies
+        run: |
+          rm -rf node_modules
+          npm install
 
       - name: Install Newman
         run: npm install -g newman
@@ -32,7 +34,15 @@ jobs:
         run: npm start &
 
       - name: Wait for server to start
-        run: sleep 5
+        run: |
+          for i in {1..10}; do
+            if curl --silent --fail http://localhost:3000; then
+              echo "Server is up!"
+              break
+            fi
+            echo "Waiting for server to start..."
+            sleep 5
+          done
 
       - name: Run Postman Collection
         run: |
