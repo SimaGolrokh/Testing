@@ -20,17 +20,19 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18 # or 20, your preferred version
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
 
       - name: Install Newman
         run: npm install -g newman
 
-      - name: Run Postman collection (Signup tests)
-        run: |
-          newman run "gardening app signup demo.postman_collection.json" \
-            --env-var baseUrl=http://localhost:3000/api/auth \
-            --reporters cli,html \
-            --reporter-html-export postman-report.html
+      - name: Start Backend Server
+        run: npm start &
+
+      - name: Wait for server to start
+        run: sleep 5
 
       - name: Run Postman Collection
         run: |

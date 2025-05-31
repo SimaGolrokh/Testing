@@ -22,5 +22,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Rebuild bcrypt for Linux
+        run: npm rebuild bcrypt --build-from-source
+
       - name: Run Jest tests
         run: npm test
