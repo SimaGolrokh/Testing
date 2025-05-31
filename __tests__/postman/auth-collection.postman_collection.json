@@ -1,0 +1,196 @@
+{
+    "info": {
+      "_postman_id": "auth-collection-id",
+      "name": "Gardening App Auth API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Signup - Successful",
+        "request": {
+          "method": "POST",
+          "header": [],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"Test1234!\",\n  \"username\": \"testuser\"\n}",
+            "options": { "raw": { "language": "json" } }
+          },
+          "url": {
+            "raw": "{{baseUrl}}/signup",
+            "host": ["{{baseUrl}}"],
+            "path": ["signup"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+              "const jsonData = pm.response.json();",
+              "pm.expect(jsonData.accessToken).to.be.a('string').and.not.empty;"
+            ] }
+          }
+        ]
+      },
+      {
+        "name": "Signup - Validation Error",
+        "request": {
+          "method": "POST",
+          "header": [],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"\",\n  \"password\": \"\",\n  \"username\": \"\"\n}",
+            "options": { "raw": { "language": "json" } }
+          },
+          "url": {
+            "raw": "{{baseUrl}}/signup",
+            "host": ["{{baseUrl}}"],
+            "path": ["signup"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+              "pm.test(\"Response has error message\", () => {",
+              "  pm.expect(pm.response.json().error).to.exist;",
+              "});"
+            ] }
+          }
+        ]
+      },
+      {
+        "name": "Login - Successful",
+        "request": {
+          "method": "POST",
+          "header": [],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"Test1234!\"\n}",
+            "options": { "raw": { "language": "json" } }
+          },
+          "url": {
+            "raw": "{{baseUrl}}/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+              "const jsonData = pm.response.json();",
+              "pm.expect(jsonData.accessToken).to.be.a('string').and.not.empty;"
+            ] }
+          }
+        ]
+      },
+      {
+        "name": "Login - Invalid Password",
+        "request": {
+          "method": "POST",
+          "header": [],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"wrongpassword\"\n}",
+            "options": { "raw": { "language": "json" } }
+          },
+          "url": {
+            "raw": "{{baseUrl}}/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test(\"Status code is 401\", () => pm.response.to.have.status(401));",
+              "pm.test(\"Response has error message\", () => {",
+              "  pm.expect(pm.response.json().error).to.equal(\"Invalid credentials\");",
+              "});"
+            ] }
+          }
+        ]
+      },
+      {
+        "name": "Refresh - Valid Token",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{refreshToken}}" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/refresh",
+            "host": ["{{baseUrl}}"],
+            "path": ["refresh"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+              "const jsonData = pm.response.json();",
+              "pm.expect(jsonData.accessToken).to.be.a('string').and.not.empty;"
+            ] }
+          }
+        ]
+      },
+      {
+        "name": "Refresh - No Token",
+        "request": {
+          "method": "POST",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/refresh",
+            "host": ["{{baseUrl}}"],
+            "path": ["refresh"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test(\"Status code is 401\", () => pm.response.to.have.status(401));",
+              "pm.test(\"Response has error message\", () => {",
+              "  pm.expect(pm.response.json().error).to.equal(\"No token provided\");",
+              "});"
+            ] }
+          }
+        ]
+      },
+      {
+        "name": "Refresh - Invalid Token",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Authorization", "value": "Bearer invalid-refresh-token" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/refresh",
+            "host": ["{{baseUrl}}"],
+            "path": ["refresh"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test(\"Status code is 403\", () => pm.response.to.have.status(403));",
+              "pm.test(\"Response has error message\", () => {",
+              "  pm.expect(pm.response.json().error).to.equal(\"Invalid or expired refresh token\");",
+              "});"
+            ] }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "http://localhost:3000/api/auth" },
+      { "key": "refreshToken", "value": "" }
+    ]
+  }
+  
